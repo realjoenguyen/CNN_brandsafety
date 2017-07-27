@@ -30,6 +30,7 @@ def load_data_and_labels(traindir):
     Loads MR polarity data from files, splits the data into words and generates labels.
     Returns split sentences and labels.
     """
+    classes = ['Adult', 'Car_accident', 'Death_tragedy', 'Hate_speech', 'Religion', 'Safe']
     # Load data from files
     x_text = []
     labels = []
@@ -42,7 +43,10 @@ def load_data_and_labels(traindir):
         x_text.append(content)
 
         label = true_filename[0:true_filename.find(LABEL_SEPARATOR)]
-        labels.append(label)
+        index = classes.index(label)
+        onehot = np.zeros(len(classes))
+        onehot[index] = 1
+        labels.append(onehot)
     labels = np.array(labels)
     return x_text, labels
 
