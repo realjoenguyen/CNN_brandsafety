@@ -111,6 +111,7 @@ x_train, x_dev = x_shuffled[:dev_sample_index], x_shuffled[dev_sample_index:]
 y_train, y_dev = y_shuffled[:dev_sample_index], y_shuffled[dev_sample_index:]
 print("Vocabulary Size: {:d}".format(len(vocab_processor.vocabulary_)))
 print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
+classes = ['Adult', 'Car_accident', 'Death_tragedy', 'Hate_speech', 'Religion', 'Safe']
 
 # Training
 # ==================================================
@@ -202,6 +203,7 @@ with tf.Graph().as_default():
             """
             A single training step
             """
+
             feed_dict = {
               cnn.input_x: x_batch,
               cnn.input_y: y_batch,
