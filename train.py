@@ -94,8 +94,9 @@ if FLAGS.trainVocab:
         pkl.dump(vocab_processor, open('vocab.pkl', "wb"))
         pkl.dump(x, open('x.pkl', "wb"))
 else:
-    vocab_processor = pkl.load(open('vocab.pkl', 'rb'))
-    x = pkl.load(open('x.pkl', 'rb'))
+    with Timing('Loading ...\n'):
+        vocab_processor = pkl.load(open('vocab.pkl', 'rb'))
+        x = pkl.load(open('x.pkl', 'rb'))
 
 # Randomly shuffle data
 np.random.seed(10)
