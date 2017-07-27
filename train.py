@@ -165,9 +165,9 @@ with tf.Graph().as_default():
         # Initialize all variables
         sess.run(tf.global_variables_initializer())
         if FLAGS.pretrain:
-            # vocabulary = vocab_processor.vocabulary_
-            for k, v in vocabulary[:5]:
-                print k, v
+            vocabulary = vocab_processor.vocabulary_
+            # for k, v in vocabulary[:5]:
+            #     print k, v
             initW = None
             if embedding_name == 'word2vec':
                 # load embedding vectors from the word2vec
