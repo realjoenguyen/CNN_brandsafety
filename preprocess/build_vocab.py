@@ -65,7 +65,7 @@ with Timing("Evaluating model ..."):
         f_reader.close()
 
 for k, v in df.items():
-    if v < 3 and v > len(train_file_list) / 2:
+    if v < 5 and v > len(train_file_list) / 2:
         del vocab[k]
 
 print "Vocab size:", len(vocab)
