@@ -54,7 +54,7 @@ with Timing("Evaluating model ..."):
         for line in f_reader:
             if 'preprocess' in traindir:
                 # vocab.update(line.split())
-                words = [e for e in line.split() and e not in STOP_WORDS] 
+                words = [e for e in line.split() and e not in STOP_WORDS]
             else:
                 text_line = NormalizationText.normalize_to_unicode(line).strip()
                 words = parsing.preprocessing.preprocess_string(text_line)
