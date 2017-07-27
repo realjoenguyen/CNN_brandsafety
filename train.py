@@ -20,6 +20,8 @@ tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training d
 tf.flags.DEFINE_string("traindir", None, "Train directory")
 
 # Model Hyperparameters
+tf.flags.DEFINE_boolean("trainVocab", True, "Use existing vocabulary")
+
 tf.flags.DEFINE_boolean("pretrain", True, "Enable/disable the word embedding (default: True)")
 tf.flags.DEFINE_string("pretrain_data", None, "use what word embedding data")
 
@@ -70,21 +72,30 @@ with Timing("Loading data..."):
     x_text, y = data_helpers.load_data_and_labels(FLAGS.traindir)
 
 # Build vocabulary
-from sklearn.feature_extraction.text import CountVectorizer
-vectorizer = CountVectorizer(min_df=5, max_df=0.5)
-with Timing("Building vocabulary...\n"):
-    vectorizer.fit_transform(x_text)
-    vocab = vectorizer.get_feature_names()
-    if FLAGS.have_max_len == False:
-        maxlen = 0
-        for e in x_text:
-            maxlen = max(maxlen, len(set(e.split())))
-        print 'sequence size =', maxlen
+import cPickle as pkl
+if FLAGS.trainVocab:
+    from sklearn.feature_extraction.text import CountVectorizer
+    vectorizer = CountVectorizer(min_df=5, max_df=0.5)
 
-    maxlen = FLAGS.max_len_doc
-    max_document_length = max([len(x.split(" ")) for x in x_text])
-    vocab_processor = learn.preprocessing.VocabularyProcessor(maxlen)
-    x = np.array(list(vocab_processor.fit_transform(x_text)))
+    with Timing("Building vocabulary...\n"):
+        vectorizer.fit_transform(x_text)
+        vocab = vectorizer.get_feature_names()
+        if FLAGS.have_max_len == False:
+            maxlen = 0
+            for e in x_text:
+                maxlen = max(maxlen, len(set(e.split())))
+            print 'sequence size =', maxlen
+
+        maxlen = FLAGS.max_len_doc
+        max_document_length = max([len(x.split(" ")) for x in x_text])
+        vocab_processor = learn.preprocessing.VocabularyProcessor(maxlen)
+        x = np.array(list(vocab_processor.fit_transform(x_text)))
+
+        pkl.dump(vocab_processor, open('vocab.pkl', "wb"))
+        pkl.dump(x, open('x.pkl', "wb"))
+else:
+    vocab_processor = pkl.load(open('vocab.pkl', 'rb'))
+    x = pkl.load(open('x.pkl', 'rb'))
 
 # Randomly shuffle data
 np.random.seed(10)
