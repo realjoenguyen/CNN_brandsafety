@@ -1,0 +1,2 @@
+mkdir: created directory '/data/tuananh/brand_safety/data/train_preprocess_word2vec_lemma'
+mkdir: created directory '/data/tuananh/brand_safety/data/test_preprocess_word2vec_lemma'

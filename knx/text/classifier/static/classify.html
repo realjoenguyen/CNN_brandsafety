@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <title>Online Text Classification System</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <script src="https://cdn.rawgit.com/vedmack/feedback_me/master/js/jquery.feedback_me.js"></script>
+        <link href='https://cdn.rawgit.com/vedmack/feedback_me/master/css/jquery.feedback_me.css' rel="stylesheet" type="text/css"/>
+        <!--https://lum-staging.knorex.com/static/bookmarklet/js/bookmarklet.22012015.min.js-->
+        <script type='text/javascript'>
+           $(document).ready(function(){
+                //set up some basic options for the feedback_me plugin
+                fm_options = {
+                    position: "left-bottom",
+                    name_required: true,
+                    message_placeholder: "Text data...",
+                    message_required: false,
+                    show_asterisk_for_required: true,
+                    feedback_url: "../classify/classifier/get_feedback",
+
+                    name_label: "Name",
+                    message_label: "Message",
+                    custom_params: {
+                        csrf: "my_secret_token",
+                        user_id: "john_doe",
+                        feedback_type: "clean"
+                    },
+                    delayed_options: {
+                        send_fail : "Sending failed :(.",
+                        send_success : "Sent successfully :)"
+                    }
+                };
+                //init feedback_me plugin
+                fm.init(fm_options);
+            });
+
+            function process(text){
+                $.ajax({
+                    'url':'../classify',
+                    'data':{'data':text}
+                    }
+                    ).done(function(data){
+                        $('#result').slideUp({
+                            'duration':200,
+                            'complete':function(){
+                                window.label = data;
+                                result = ''
+                                for(var i=0; i<window.label.length; i++){
+                                    if(i!=0){
+                                        result+=',';
+                                    }
+                                    result+=window.label[i][0]
+                                }
+                                $('#label')[0].innerHTML = result;
+                                $('#label')[0].innerText = result;
+                                $('#details')[0].innerHTML = window.label;
+                                $('#details')[0].innerText = window.label;
+                                $('#result').slideDown({'duration':200})
+                                }
+                            })
+                        }
+                );
+            }
+        </script>
+    </head>
+
+     <a href="javascript:(function(){
+        var script_srcs = [
+          'http://127.0.0.1:8000/git/bookmarklet/js/bookmarklet.js'
+        ];
+        css = [
+          'https://lum-staging.knorex.com/static/bookmarklet/css/bookmarklet.22012015.min.css'
+        ];
+        for (var i = 0; i < script_srcs.length; i++) {
+          var script = document.createElement('script');
+          script.src = script_srcs[i];
+          script.type = 'text/javascript';
+          document.head.appendChild(script);
+        }
+        for (var i = 0; i < css.length; i++) {
+          var link = document.createElement('link');
+          link.href = css[i];
+          link.type = 'text/css';
+          link.rel = 'stylesheet';
+          document.head.appendChild(link);
+        }
+     }());">Classifier</a>
+
+    <body style='font-family:calibri; background:#EEEEEE; width:800px; padding:50px 0 0 0; margin:auto'>
+        <h2 style='text-align:center'>Text Classification System</h2>
+        <textarea name='data' id='data' style='width:100%; height:200px; margin:auto; clear:both'></textarea>
+        <input type='Submit' value='Submit' onclick='process($("#data")[0].value)' />
+        <div style='padding:10px' id='result'>
+            <div style='padding:10px; font-size:48px; text-align:center' id='label'></div>
+            <div id='details'></div>
+        </div>
+    </body>
+</html>
+ 

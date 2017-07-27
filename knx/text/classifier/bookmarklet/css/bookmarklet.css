@@ -1,0 +1,55 @@
+.modaling {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('http://sampsonresume.com/labs/pIkfp.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+
+body.loading {
+    overflow: hidden;   
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+
+body.loading .modaling {
+    display: block;
+}
+
+.knorexmodal {
+    z-index: 999999999 !important;
+}
+.knorexmodal-dialog {
+
+    font-size: 14px;
+    text-align: left;
+    z-index: 999999999 !important;
+}
+
+.bootbox-body {
+    color: black;
+}
+
+.close {
+    z-index: 999999999 !important;
+}
+
+
+.bootbox-close-button button {
+    padding-top: 0px;
+    pading-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding: 0px 0px 0px 0px;
+    background-color: #F7F8F9;
+}

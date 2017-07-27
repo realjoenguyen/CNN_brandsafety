@@ -1,0 +1,162 @@
+<html>
+    <head>
+        <title>Concept Extraction System</title>
+        <script type='text/javascript' src='jquery-2.0.3.min.js'></script>
+        <script type='text/javascript'>
+            function submit(){
+                opt = $("#boost_method")[0];
+                opt = opt.options[opt.selectedIndex].value;
+                n = $("#n")[0];
+                n = n.options[n.selectedIndex].value;
+                k = $("#k")[0];
+                k = k.options[k.selectedIndex].value;
+                n_ranked = $("#n_ranked")[0];
+                n_ranked = n_ranked.options[n_ranked.selectedIndex].value;
+                rank_sim = $("#rank_sim")[0];
+                rank_sim = rank_sim.options[rank_sim.selectedIndex].value;
+                process($("#data")[0].value,$("#title")[0].value,opt,n,k,n_ranked,rank_sim);
+            }
+
+            function process(text,title,boost_method,n,k,n_ranked,rank_sim){
+                if(window.enabled===false) return;
+                window.enabled = false;
+                $("#loading").show();
+                startTime = Date.now();
+                $.ajax({
+                        'url':'../extract',
+                        'data':{'data':text,
+                                'title':title,
+                                'boost_method':boost_method,
+                                'n':n,
+                                'k':k,
+                                'n_ranked':n_ranked,
+                                'return_values':'concepts,phrases,terms',
+                                'rank_sim':rank_sim
+                                }
+                        }
+                        ).done(function(data){
+                            processTime = (Date.now()-startTime)/1000;
+                            $("#time").text("Done in "+processTime+" s");
+                            window.concepts = data['concepts'];
+                            window.phrases = data['phrases'];
+                            window.terms = data['terms'];
+                            if(window.concepts.length == 0){
+                                result = '<span style="font-style:italic">An error occurred</span>';
+                            } else {
+                                hasScore = window.concepts[0].length==2;
+                                result = window.phrases[0];
+                                if(!result){
+                                    result = '<span style="font-style:italic">no useful terms found</span>'
+                                } else if(result.length==2){
+                                    result = result[0];
+                                }
+                            }
+                            htmlResult = "<table border='1' rules='cols' cellpadding='5' align='center'>";
+                            htmlResult += "<tr style='border-bottom:1px solid black'><th colspan='2'>Top Concepts</th><th></th><th colspan='2'>Top Phrases</th><th></th><th colspan='2'>Top Terms</th></tr>";
+                            for(var i=0; i<Math.max(window.concepts.length, window.phrases.length, window.terms.length); i++){
+                                if(hasScore){
+                                    if(window.concepts.length > i){
+                                        htmlResult += "<tr><td>"+window.concepts[i][0] + "</td><td>" + (100*window.concepts[i][1]).toFixed(2) + "</td>";
+                                    } else {
+                                        htmlResult += "<tr><td>&nbsp;</td><td>&nbsp;</td>";
+                                    }
+                                    htmlResult += "<td>&nbsp;</td>";
+                                    if(window.phrases.length > i){
+                                        // if(i>0 && window.phrases[i-1][1]>=0.2 && window.phrases[i][1]<0.2){
+                                        //     td = "<td style='border-top:1px black solid'>";
+                                        // } else {
+                                            td = "<td>";
+                                        // }
+                                        htmlResult += td+window.phrases[i][0] + "</td>" + td + (100*window.phrases[i][1]).toFixed(2) + "</td>";
+                                    } else {
+                                        htmlResult += "<td>&nbsp;</td><td>&nbsp;</td>";
+                                    }
+                                    htmlResult += "<td>&nbsp;</td>";
+                                    if(window.terms.length > i){
+                                        htmlResult += "<td>"+window.terms[i][0] + "</td><td>" + (100*window.terms[i][1]).toFixed(2) + "</td>";
+                                    } else {
+                                        htmlResult += "<td>&nbsp;</td><td>&nbsp;</td>";
+                                    }
+                                    htmlResult += '</tr>';
+                                } else {
+                                    htmlResult += "<tr><td>"+window.concepts[i]+"</td><td></td>";
+                                    htmlResult += "<td></td>";
+                                    htmlResult += "<td>"+window.phrases[i]+"</td><td></td>";
+                                    htmlResult += "<td></td>";
+                                    htmlResult += "<td>"+window.terms[i]+"</td><td></td>";
+                                    htmlResult += '</tr>';
+                                }
+                            }
+                            htmlResult += '</table>';
+                            $('#label').html(result);
+                            $('#details').html(htmlResult);
+                            $("#loading").hide();
+                            window.enabled = true;
+                            }
+                            );
+            }
+        </script>
+    </head>
+    <body style='font-family:calibri; background:#EEEEEE; width:800px; padding:50px 0 0 0; margin:auto'>
+        <h2 style='text-align:center'>Concept Extraction System</h2>
+        <div id='version' style='font-size:16px; text-align:center; font-weight:bold; margin-top:-15px'></div>
+        <script type='text/javascript'>
+            $.ajax({'url': '../version'}).done(function(data){$('#version').text('v'+data);});
+        </script>
+        <div><span style='text-align:left; font-weight:bold'>Title</span> (can be empty)</div>
+        <input type='text' name='title' id='title' style='width:100%'/>
+        <div style='text-align:left; font-weight:bold'>Content</div>
+        <textarea name='data' id='data' style='width:100%; height:200px; margin:auto; clear:both'></textarea>
+        <input type='Submit' value='Submit' onclick='submit();' />
+        <select id='boost_method' name='boost_method' style="display:inline">
+            <option value='0'>Core</option>
+            <option value='1' selected>Core + Concept boosting</option>
+            <option value='2'>Core + Concept boosting with amplification</option>
+        </select>
+        n:
+        <select id='n' name='n' style='display:inline'>
+            <option value='5'>5</option>
+            <option value='10'>10</option>
+            <option value='25' selected>25</option>
+            <option value='30'>30</option>
+            <option value='50'>50</option>
+            <option value='100'>100</option>
+            <option value='200'>200</option>
+        </select>
+        k:
+        <select id='k' name='k' style='display:inline'>
+            <option value='5'>5</option>
+            <option value='10'>10</option>
+            <option value='25' selected>25</option>
+            <option value='30'>30</option>
+            <option value='50'>50</option>
+            <option value='100'>100</option>
+            <option value='200'>200</option>
+        </select>
+        n_ranked:
+        <select id='n_ranked' name='n_ranked' style='display:inline'>
+            <option value='0'>No rerank</option>
+            <option value='5'>5</option>
+            <option value='10'>10</option>
+            <option value='25' selected>25</option>
+            <option value='30'>30</option>
+            <option value='50'>50</option>
+            <option value='100'>100</option>
+            <option value='200'>200</option>
+        </select>
+        <br />
+        rank_sim:
+        <select id='rank_sim' name='rank_sim' style='display:inline'>
+            <option value='gk_rank_similarity'>Goodman and Kruskal</option>
+            <option value='spearman_rank_similarity' selected>Spearman</option>
+        </select>
+        <div style='padding:10px' id='result'>
+            <div id='loading' style='padding:10px; font-size:49px; text-align:center; display:none'>
+                <img style="margin:-160px auto; overflow:hidden" src="Loading.gif" />
+            </div>
+            <!--<div id='label' style='padding:10px; font-size:48px; text-align:center'></div>-->
+            <div id='time' style='text-align:center'></div>
+            <div id='details'></div>
+        </div>
+    </body>
+</html>

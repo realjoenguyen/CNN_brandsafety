@@ -1,0 +1,14 @@
+@relation Cool relation
+
+@attribute attr0 numeric
+@attribute attr1 numeric
+@attribute Third column numeric
+@attribute attr3 numeric
+@attribute attr4 numeric
+@attribute Row ID string
+@attribute Last Row {yes,no}
+
+@data
+1,2,3,4,-1,'row_1',yes
+5,6,7,8,-2,'row_2',yes
+9,10,11,12,-3,'row_3',no
