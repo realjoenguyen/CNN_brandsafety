@@ -7,7 +7,7 @@ from os import listdir
 from os.path import isfile, join
 import sys
 from gensim import parsing
-from BS.knx.text import NormalizationText
+from knx.text import NormalizationText
 
 traindir = sys.argv[1]
 output_dir = sys.argv[2]
