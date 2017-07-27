@@ -6,8 +6,6 @@ import cPickle as pkl
 from os import listdir
 from os.path import isfile, join
 import sys
-
-from data_conversion.common_preprocess import  clean_str, normalize_to_unicode, tokenize
 from gensim import parsing
 from BS.knx.text import NormalizationText
 
