@@ -46,14 +46,24 @@ def load_data_and_labels(traindir):
     labels = np.array(labels)
     return x_text, labels
 
-# def load_embedding_vectors_word2vec(vocabulary, filename, binary):
-#
-#     # load embedding_vectors from the word2vec
+import gensim
+def load_embedding_vectors_word2vec(vocabulary, filename, binary):
+    embedding_vectors = np.zeros((len(vocabulary), 300))
+
+    vocab_dict = vocabulary._mapping
+    sorted_vocab = sorted(vocab_dict.items(), key=lambda x: x[1])
+    vocabulary = list(list(zip(*sorted_vocab))[0])
+    model = gensim.models.KeyedVectors.load_word2vec_format(filename, binary=True)
+    for i, e in enumerate(vocabulary):
+        try:
+            embedding_vectors[i] = model[e]
+        except:
+            continue
+    return embedding_vectors
 
 def load_embedding_vectors_glove(vocabulary, filename, vector_size):
     # load embedding_vectors from the glove
     # initial matrix with random uniform
-    embedding_vectors = np.random.uniform(-0.25, 0.25, (len(vocabulary), vector_size))
     f = open(filename)
     for line in f:
         values = line.split()
