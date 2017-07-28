@@ -84,3 +84,10 @@ class TextCNN(object):
         with tf.name_scope("accuracy"):
             correct_predictions = tf.equal(self.predictions, tf.argmax(self.input_y, 1))
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, "float"), name="accuracy")
+
+        with tf.name_scope("summaries"):
+            tf.summary.scalar("loss", self.loss)
+            tf.summary.histogram("histogram loss", self.loss)
+            # because you have several summaries, we should merge them all
+            # into one op to make it easier to manage
+            self.summary_op = tf.summary.merge_all()
