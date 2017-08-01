@@ -11,7 +11,7 @@ from text_cnn import TextCNN
 from tensorflow.contrib import learn
 import yaml
 import math
-
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, make_scorer
 # Parameters
 # ==================================================
 
@@ -33,6 +33,7 @@ tf.flags.DEFINE_string("filter_sizes", "3,4,5", "Comma-separated filter sizes (d
 tf.flags.DEFINE_integer("num_filters", 128, "Number of filters per filter size (default: 128)")
 tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (default: 0.5)")
 tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 0.0)")
+tf.flags.DEFINE_float("l1_reg_lambda", 0.0, "L1 regularization lambda (default: 0.0)")
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 32, "Batch Size (default: 64)")
@@ -69,7 +70,7 @@ else:
 from knx.util.logging import Timing
 with Timing("Loading data..."):
     datasets = None
-    x_text, y = data_helpers.load_data_and_labels(FLAGS.traindir)
+    x_text, y = data_helpers.load_data_and_labels(FLAGS.traindir, onehot=True)
 
 # Build vocabulary
 import cPickle as pkl
@@ -129,23 +130,25 @@ with tf.Graph().as_default():
             embedding_size=embedding_dimension,
             filter_sizes=list(map(int, FLAGS.filter_sizes.split(","))),
             num_filters=FLAGS.num_filters,
-            l2_reg_lambda=FLAGS.l2_reg_lambda)
+            l1=FLAGS.l1_reg_lambda,
+            l2=FLAGS.l2_reg_lambda)
+        cnn.build_graph()
 
         # Define Training procedure
-        global_step = tf.Variable(0, name="global_step", trainable=False)
-        optimizer = tf.train.AdamOptimizer(cnn.learning_rate)
-        grads_and_vars = optimizer.compute_gradients(cnn.loss)
-        train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
+        # global_step = tf.Variable(0, name="global_step", trainable=False)
+        # optimizer = tf.train.AdamOptimizer(cnn.learning_rate)
+        # grads_and_vars = optimizer.compute_gradients(cnn.loss)
+        # train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
 
         # Keep track of gradient values and sparsity (optional)
-        grad_summaries = []
-        for g, v in grads_and_vars:
-            if g is not None:
-                grad_hist_summary = tf.summary.histogram("{}/grad/hist".format(v.name), g)
-                sparsity_summary = tf.summary.scalar("{}/grad/sparsity".format(v.name), tf.nn.zero_fraction(g))
-                grad_summaries.append(grad_hist_summary)
-                grad_summaries.append(sparsity_summary)
-        grad_summaries_merged = tf.summary.merge(grad_summaries)
+        # grad_summaries = []
+        # for g, v in grads_and_vars:
+        #     if g is not None:
+        #         grad_hist_summary = tf.summary.histogram("{}/grad/hist".format(v.name), g)
+        #         sparsity_summary = tf.summary.scalar("{}/grad/sparsity".format(v.name), tf.nn.zero_fraction(g))
+        #         grad_summaries.append(grad_hist_summary)
+        #         grad_summaries.append(sparsity_summary)
+        # grad_summaries_merged = tf.summary.merge(grad_summaries)
 
         # Output directory for models and summaries
         timestamp = str(int(time.time()))
@@ -160,19 +163,19 @@ with tf.Graph().as_default():
         # train_summary_op = tf.summary.merge([loss_summary, acc_summary, grad_summaries_merged])
         train_summary_dir = os.path.join(out_dir, "summaries", "train")
         train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
-        #
+
         # # Dev summaries
         # dev_summary_op = tf.summary.merge([loss_summary, acc_summary])
         dev_summary_dir = os.path.join(out_dir, "summaries", "dev")
         dev_summary_writer = tf.summary.FileWriter(dev_summary_dir, sess.graph)
-        #
-        # # Checkpoint directory. Tensorflow assumes this directory already exists so we need to create it
+
+        # Checkpoint directory. Tensorflow assumes this directory already exists so we need to create it
         checkpoint_dir = os.path.abspath(os.path.join(out_dir, "checkpoints"))
         checkpoint_prefix = os.path.join(checkpoint_dir, "model")
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
         saver = tf.train.Saver(tf.global_variables(), max_to_keep=FLAGS.num_checkpoints)
-        #
+
         # # Write vocabulary
         # vocab_processor.save(os.path.join(out_dir, "vocab"))
 
@@ -197,41 +200,46 @@ with tf.Graph().as_default():
                 print("glove file has been loaded\n")
             sess.run(cnn.W.assign(initW))
 
-        def train_step(x_batch, y_batch, learning_rate):
+        def train_step(x_batch, y_batch, learning_rate, step):
             """
             A single training step
             """
-
             feed_dict = {
               cnn.input_x: x_batch,
               cnn.input_y: y_batch,
               cnn.dropout_keep_prob: FLAGS.dropout_keep_prob,
               cnn.learning_rate: learning_rate
             }
-            _, step, summaries, loss, accuracy = sess.run(
-                [train_op, global_step, cnn.summary_op, cnn.loss, cnn.accuracy],
-                feed_dict)
+            _, summaries, loss, accuracy = sess.run(
+                        [cnn.optimizer, cnn.summary_op, cnn.loss, cnn.accuracy],feed_dict)
+
             time_str = datetime.datetime.now().isoformat()
             print("{}: step {}, loss {:g}, acc {:g}, learning_rate {:g}"
-                  .format(time_str, step, loss, accuracy, learning_rate))
+                        .format(time_str, step, loss, accuracy, learning_rate))
             train_summary_writer.add_summary(summaries, step)
 
         def dev_step(x_batch, y_batch, writer=None):
             """
             Evaluates model on a dev set
             """
-            feed_dict = {
-              cnn.input_x: x_batch,
-              cnn.input_y: y_batch,
-              cnn.dropout_keep_prob: 1.0
-            }
-            step, summaries, loss, accuracy = sess.run(
-                [global_step, cnn.summary_op, cnn.loss, cnn.accuracy],
-                feed_dict)
-            time_str = datetime.datetime.now().isoformat()
-            print("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
-            if writer:
-                writer.add_summary(summaries, step)
+            batches = data_helpers.batch_iter(x_batch, FLAGS.batch_size, 1, shuffle=False)
+            # Collect the predictions here
+            all_predictions = []
+            all_probabilities = None
+
+            avg_loss = 0
+            for x_dev_batch in batches:
+                preds, loss = sess.run([cnn.predictions, cnn.loss], {cnn.input_x: x_dev_batch, cnn.dropout_keep_prob: 1.0})
+                all_predictions = np.concatenate([all_predictions, preds])
+                avg_loss += loss
+            avg_loss /= len(batches)
+
+            precision = precision_score(y_batch, all_predictions, pos_label=None, average='macro')
+            print 'precision: {0}, avg_loss: {1}\n'.format(precision, avg_loss)
+            # time_str = datetime.datetime.now().isoformat()
+            # print("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
+            # if writer:
+            #     writer.add_summary(summaries, step)
 
         # Generate batches
         batches = data_helpers.batch_iter(
@@ -242,15 +250,15 @@ with tf.Graph().as_default():
         decay_speed = FLAGS.decay_coefficient*len(y_train)/FLAGS.batch_size
         # Training loop. For each batch...
         counter = 0
-        for batch in batches:
+        for current_step, batch in enumerate(batches):
             learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-counter/decay_speed)
             counter += 1
             x_batch, y_batch = zip(*batch)
-            train_step(x_batch, y_batch, learning_rate)
-            current_step = tf.train.global_step(sess, global_step)
-            # if current_step % FLAGS.evaluate_every == 0:
-            #     print("\nEvaluation:")
-            #     dev_step(x_dev, y_dev, writer=dev_summary_writer)
-            #     print("")
+            train_step(x_batch, y_batch, learning_rate, step=current_step)
+            if current_step % FLAGS.evaluate_every == 0:
+                print("\nEvaluation:")
+                dev_step(x_dev, y_dev)
+                print("")
+
         path = saver.save(sess, checkpoint_prefix)
         print("Saved model checkpoint to {}\n".format(path))
