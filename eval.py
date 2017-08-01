@@ -114,5 +114,6 @@ print(metrics.confusion_matrix(y_test, preds))
 
 f = open('error-log.txt', 'wb')
 for i in range(len(preds)):
-    f.write('{0} {1}'.format(y_test[i], preds[i]))
+    if y_test[i] != preds[i]:
+        f.write('{0} {1}\n'.format(classes[y_test[i]], classes[preds[i]]))
 f.close()
