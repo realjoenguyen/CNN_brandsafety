@@ -49,54 +49,58 @@ with Timing('Loading vocab & transform test x_raw...\n'):
     vocab_processor = pkl.load(open('vocab.pkl', 'rb'))
     x_test = np.array(list(vocab_processor.transform(x_raw)))
 
-print("\nEvaluating...\n")
+with Timing("\nEvaluating...\n"):
+    # Evaluation
+    # ==================================================
+    checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)
+    graph = tf.Graph()
+    with graph.as_default():
+        session_conf = tf.ConfigProto(
+          allow_soft_placement=FLAGS.allow_soft_placement,
+          log_device_placement=FLAGS.log_device_placement)
+        sess = tf.Session(config=session_conf)
+        with sess.as_default():
+            # Load the saved meta graph and restore variables
+            saver = tf.train.import_meta_graph("{}.meta".format(checkpoint_file))
+            saver.restore(sess, checkpoint_file)
 
-# Evaluation
-# ==================================================
-checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)
-graph = tf.Graph()
-with graph.as_default():
-    session_conf = tf.ConfigProto(
-      allow_soft_placement=FLAGS.allow_soft_placement,
-      log_device_placement=FLAGS.log_device_placement)
-    sess = tf.Session(config=session_conf)
-    with sess.as_default():
-        # Load the saved meta graph and restore variables
-        saver = tf.train.import_meta_graph("{}.meta".format(checkpoint_file))
-        saver.restore(sess, checkpoint_file)
+            # Get the placeholders from the graph by name
+            input_x = graph.get_operation_by_name("input_x").outputs[0]
+            # input_y = graph.get_operation_by_name("input_y").outputs[0]
+            dropout_keep_prob = graph.get_operation_by_name("dropout_keep_prob").outputs[0]
 
-        # Get the placeholders from the graph by name
-        input_x = graph.get_operation_by_name("input_x").outputs[0]
-        # input_y = graph.get_operation_by_name("input_y").outputs[0]
-        dropout_keep_prob = graph.get_operation_by_name("dropout_keep_prob").outputs[0]
+            # Tensors we want to evaluate
+            scores = graph.get_operation_by_name("output/scores").outputs[0]
 
-        # Tensors we want to evaluate
-        scores = graph.get_operation_by_name("output/scores").outputs[0]
+            # Tensors we want to evaluate
+            predictions = graph.get_operation_by_name("output/predictions").outputs[0]
 
-        # Tensors we want to evaluate
-        predictions = graph.get_operation_by_name("output/predictions").outputs[0]
+            # Generate batches for one epoch
+            batches = data_helpers.batch_iter(list(x_test), FLAGS.batch_size, 1, shuffle=False)
 
-        # Generate batches for one epoch
-        batches = data_helpers.batch_iter(list(x_test), FLAGS.batch_size, 1, shuffle=False)
+            # Collect the predictions here
+            all_predictions = []
+            all_probabilities = None
 
-        # Collect the predictions here
-        all_predictions = []
-        all_probabilities = None
+            for x_test_batch in batches:
+                batch_predictions_scores = sess.run([predictions, scores], {input_x: x_test_batch, dropout_keep_prob: 1.0})
+                all_predictions = np.concatenate([all_predictions, batch_predictions_scores[0]])
+                probabilities = softmax(batch_predictions_scores[1])
+                if all_probabilities is not None:
+                    all_probabilities = np.concatenate([all_probabilities, probabilities])
+                else:
+                    all_probabilities = probabilities
 
-        for x_test_batch in batches:
-            batch_predictions_scores = sess.run([predictions, scores], {input_x: x_test_batch, dropout_keep_prob: 1.0})
-            all_predictions = np.concatenate([all_predictions, batch_predictions_scores[0]])
-            probabilities = softmax(batch_predictions_scores[1])
-            if all_probabilities is not None:
-                all_probabilities = np.concatenate([all_probabilities, probabilities])
-            else:
-                all_probabilities = probabilities
+print len(all_predictions), len(y_test)
+print y_test[:5]
+print all_predictions[:5]
 
 # Print accuracy if y_test is defined
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, make_scorer
 if y_test is not None:
-    correct_predictions = float(sum(all_predictions == y_test))
     print("Total number of test examples: {}".format(len(y_test)))
-    print("Accuracy: {:g}".format(correct_predictions/float(len(y_test))))
+    acc = accuracy_score(y_test, all_predictions)
+    print("Accuracy: {:g}".format(acc))
     print(metrics.classification_report(y_test, all_predictions))
     print(metrics.confusion_matrix(y_test, all_predictions))
 
