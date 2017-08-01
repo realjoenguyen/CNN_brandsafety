@@ -27,7 +27,7 @@ with open("config.yml", 'r') as ymlfile:
 # Data Parameters
 
 # Eval Parameters
-tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
+tf.flags.DEFINE_integer("batch_size", 32, "Batch Size (default: 64)")
 tf.flags.DEFINE_string("checkpoint_dir", "", "Checkpoint directory from training run")
 tf.flags.DEFINE_boolean("eval_train", False, "Evaluate on all training data")
 
@@ -43,33 +43,7 @@ for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
 
-datasets = None
-
-# CHANGE THIS: Load data. Load your own data here
-dataset_name = cfg["datasets"]["default"]
-if FLAGS.eval_train:
-    if dataset_name == "mrpolarity":
-        datasets = data_helpers.get_datasets_mrpolarity(cfg["datasets"][dataset_name]["positive_data_file"]["path"],
-                                             cfg["datasets"][dataset_name]["negative_data_file"]["path"])
-    elif dataset_name == "20newsgroup":
-        datasets = data_helpers.get_datasets_20newsgroup(subset="test",
-                                              categories=cfg["datasets"][dataset_name]["categories"],
-                                              shuffle=cfg["datasets"][dataset_name]["shuffle"],
-                                              random_state=cfg["datasets"][dataset_name]["random_state"])
-    x_raw, y_test = data_helpers.load_data_labels(datasets)
-    y_test = np.argmax(y_test, axis=1)
-    print("Total number of test examples: {}".format(len(y_test)))
-else:
-    if dataset_name == "mrpolarity":
-        datasets = {"target_names": ['positive_examples', 'negative_examples']}
-        x_raw = ["a masterpiece four years in the making", "everything is off."]
-        y_test = [1, 0]
-    else:
-        datasets = {"target_names": ['alt.atheism', 'comp.graphics', 'sci.med', 'soc.religion.christian']}
-        x_raw = ["The number of reported cases of gonorrhea in Colorado increased",
-                 "I am in the market for a 24-bit graphics card for a PC"]
-        y_test = [2, 1]
-
+x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.traindir, onehot=False)
 # Map data into vocabulary
 vocab_path = os.path.join(FLAGS.checkpoint_dir, "..", "vocab")
 vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_path)
@@ -123,7 +97,7 @@ if y_test is not None:
     correct_predictions = float(sum(all_predictions == y_test))
     print("Total number of test examples: {}".format(len(y_test)))
     print("Accuracy: {:g}".format(correct_predictions/float(len(y_test))))
-    print(metrics.classification_report(y_test, all_predictions, target_names=datasets['target_names']))
+    print(metrics.classification_report(y_test, all_predictions))
     print(metrics.confusion_matrix(y_test, all_predictions))
 
 # Save the evaluation to a csv
@@ -131,6 +105,7 @@ predictions_human_readable = np.column_stack((np.array(x_raw),
                                               [int(prediction) for prediction in all_predictions],
                                               [ "{}".format(probability) for probability in all_probabilities]))
 out_path = os.path.join(FLAGS.checkpoint_dir, "..", "prediction.csv")
+
 print("Saving evaluation to {0}".format(out_path))
 with open(out_path, 'w') as f:
     csv.writer(f).writerows(predictions_human_readable)

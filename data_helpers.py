@@ -25,7 +25,7 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
 from os.path import isfile, join
 from os import listdir
 
-def load_data_and_labels(traindir):
+def load_data_and_labels(traindir, onehot=True):
     """
     Loads MR polarity data from files, splits the data into words and generates labels.
     Returns split sentences and labels.
@@ -43,10 +43,14 @@ def load_data_and_labels(traindir):
         x_text.append(content)
 
         label = true_filename[0:true_filename.find(LABEL_SEPARATOR)]
-        index = classes.index(label)
-        onehot = np.zeros(len(classes))
-        onehot[index] = 1
-        labels.append(onehot)
+        if onehot:
+            index = classes.index(label)
+            onehot = np.zeros(len(classes))
+            onehot[index] = 1
+            labels.append(onehot)
+        else:
+            labels.append(label)
+
     labels = np.array(labels)
     return x_text, labels
 
