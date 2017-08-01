@@ -28,7 +28,8 @@ with open("config.yml", 'r') as ymlfile:
 
 # Eval Parameters
 tf.flags.DEFINE_integer("batch_size", 32, "Batch Size (default: 64)")
-tf.flags.DEFINE_string("checkpoint_dir", "", "Checkpoint directory from training run")
+tf.flags.DEFINE_string("checkpoint_dir", None, "Checkpoint directory from training run")
+tf.flags.DEFINE_string("testdir", None, "Test directory")
 
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
@@ -42,7 +43,7 @@ for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
 
-x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.traindir, onehot=False)
+x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.testdir, onehot=False)
 # Map data into vocabulary
 vocab_path = os.path.join(FLAGS.checkpoint_dir, "..", "vocab")
 vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_path)
