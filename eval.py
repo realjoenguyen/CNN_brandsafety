@@ -41,7 +41,7 @@ print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
-
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.testdir, onehot=False)
 # Map data into vocabulary
 import cPickle as pkl
