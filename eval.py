@@ -8,7 +8,7 @@ from tensorflow.contrib import learn
 import csv
 from sklearn import metrics
 import yaml
-
+from knx.util.logging import Timing
 
 def softmax(x):
     """Compute softmax values for each sets of scores in x."""
@@ -23,7 +23,6 @@ with open("config.yml", 'r') as ymlfile:
 
 # Parameters
 # ==================================================
-
 # Data Parameters
 
 # Eval Parameters
@@ -45,9 +44,10 @@ print("")
 
 x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.testdir, onehot=False)
 # Map data into vocabulary
-vocab_path = os.path.join(FLAGS.checkpoint_dir, "..", "vocab")
-vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_path)
-x_test = np.array(list(vocab_processor.transform(x_raw)))
+import cPickle as pkl
+with Timing('Loading vocab & transform test x_raw...\n'):
+    vocab_processor = pkl.load(open('vocab.pkl', 'rb'))
+    x_test = np.array(list(vocab_processor.transform(x_raw)))
 
 print("\nEvaluating...\n")
 
