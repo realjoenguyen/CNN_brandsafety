@@ -97,22 +97,22 @@ with Timing("\nEvaluating...\n"):
 print len(all_predictions), len(y_test)
 print y_test[:5]
 print all_predictions[:5]
-
+preds = all_predictions
 # Print accuracy if y_test is defined
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, make_scorer
-if y_test is not None:
-    print("Total number of test examples: {}".format(len(y_test)))
-    acc = accuracy_score(y_test, all_predictions)
-    print("Accuracy: {:g}".format(acc))
-    print(metrics.classification_report(y_test, all_predictions))
-    print(metrics.confusion_matrix(y_test, all_predictions))
 
-# Save the evaluation to a csv
-predictions_human_readable = np.column_stack((np.array(x_raw),
-                                              [int(prediction) for prediction in all_predictions],
-                                              [ "{}".format(probability) for probability in all_probabilities]))
-out_path = os.path.join(FLAGS.checkpoint_dir, "..", "prediction.csv")
+with Timing("Evaluating model ..."):
+    f1 = f1_score(y_test, preds, pos_label=None, average='macro')
+    precision = precision_score(y_test, preds, pos_label=None, average='macro')
+    recall = recall_score(y_test, preds, pos_label=None, average='macro')
 
-print("Saving evaluation to {0}".format(out_path))
-with open(out_path, 'w') as f:
-    csv.writer(f).writerows(predictions_human_readable)
+print "F1: " + str(f1)
+print "Precision: " + str(precision)
+print "Recall: " + str(recall)
+print(metrics.classification_report(y_test, preds))
+print(metrics.confusion_matrix(y_test, preds))
+
+f = open('error-log.txt', 'wb')
+for i in range(len(preds)):
+    f.write('{0} {1}'.format(y_test[i], preds[i]))
+f.close()
