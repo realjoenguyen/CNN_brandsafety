@@ -18,6 +18,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 # Data loading params
 tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_string("traindir", None, "Train directory")
+tf.flags.DEFINE_string("exp_name", 'newest', "Experiment name, use to name the checkpoint (tensorboard)")
 
 # Model Hyperparameters
 tf.flags.DEFINE_boolean("trainVocab", True, "Use existing vocabulary")
@@ -151,8 +152,9 @@ with tf.Graph().as_default():
         # grad_summaries_merged = tf.summary.merge(grad_summaries)
 
         # Output directory for models and summaries
-        timestamp = str(int(time.time()))
-        out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", timestamp))
+        # timestamp = str(int(time.time()))
+        # timestamp = str(int(time.time()))
+        out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", FLAGS.exp_name))
         print("Writing to {}\n".format(out_dir))
         #
         # # Summaries for loss and accuracy
@@ -211,7 +213,7 @@ with tf.Graph().as_default():
               cnn.learning_rate: learning_rate
             }
             _, summaries, loss, accuracy = sess.run(
-                        [cnn.optimizer, cnn.summary_op, cnn.loss, cnn.accuracy],feed_dict)
+                        [cnn.optimizer, cnn.summary_op, cnn.loss, cnn.accuracy], feed_dict)
 
             time_str = datetime.datetime.now().isoformat()
             print("{}: step {}, loss {:g}, acc {:g}, learning_rate {:g}"
