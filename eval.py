@@ -33,7 +33,7 @@ tf.flags.DEFINE_string("testdir", None, "Test directory")
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
-
+classes = ['Adult', 'Car_accident', 'Death_tragedy', 'Hate_speech', 'Religion', 'Safe']
 
 FLAGS = tf.flags.FLAGS
 FLAGS._parse_flags()
@@ -43,6 +43,9 @@ for attr, value in sorted(FLAGS.__flags.items()):
 print("")
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.testdir, onehot=False)
+#Convert string label into int label
+y_test = [classes.index(e) for e in y_test]
+
 # Map data into vocabulary
 import cPickle as pkl
 with Timing('Loading vocab & transform test x_raw...\n'):
