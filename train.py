@@ -228,19 +228,20 @@ with tf.Graph().as_default():
 
             feed_dict = {
                 cnn.input_x: x_batch,
-                cnn.input_y: y_batch,
+                # cnn.input_y: y_batch,
                 cnn.dropout_keep_prob: 1.0
             }
 
-            avg_loss = 0
+            # avg_loss = 0
             for x_dev_batch in batches:
-                preds, loss = sess.run([cnn.predictions, cnn.loss], feed_dict)
+                preds = sess.run([cnn.predictions], feed_dict)
                 all_predictions = np.concatenate([all_predictions, preds])
-                avg_loss += loss
-            avg_loss /= len(batches)
+                # avg_loss += loss
+            # avg_loss /= len(batches)
 
             precision = precision_score(y_batch, all_predictions, pos_label=None, average='macro')
-            print 'precision: {0}, avg_loss: {1}\n'.format(precision, avg_loss)
+            # print 'precision: {0}, avg_loss: {1}\n'.format(precision, avg_loss)
+            print 'precision: {0}\n'.format(precision)
             # time_str = datetime.datetime.now().isoformat()
             # print("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
             # if writer:
@@ -260,10 +261,12 @@ with tf.Graph().as_default():
             counter += 1
             x_batch, y_batch = zip(*batch)
             train_step(x_batch, y_batch, learning_rate, step=current_step)
-            if current_step % FLAGS.evaluate_every == 0:
-                print("\nEvaluation:")
-                dev_step(x_dev, y_dev)
-                print("")
+            # if current_step % FLAGS.evaluate_every == 0:
+            #     print("\nEvaluation:")
+            #     dev_step(x_dev, y_dev)
+            #     print("")
 
+        print 'Dev set: '
+        dev_step(x_dev, y_dev)
         path = saver.save(sess, checkpoint_prefix)
         print("Saved model checkpoint to {}\n".format(path))
