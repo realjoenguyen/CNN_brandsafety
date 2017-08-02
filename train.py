@@ -71,7 +71,7 @@ else:
 from knx.util.logging import Timing
 with Timing("Loading data..."):
     datasets = None
-    x_text, y = data_helpers.load_data_and_labels(FLAGS.traindir, onehot=True)
+    x_text, y = data_helpers.load_data_and_labels(FLAGS.traindir, used_onehot=True)
 
 # Build vocabulary
 import cPickle as pkl
