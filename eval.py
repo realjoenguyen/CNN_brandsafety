@@ -42,7 +42,7 @@ for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
-x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.testdir, onehot=False)
+x_raw, y_test, test_filenames = data_helpers.load_data_and_labels(FLAGS.testdir, used_onehot=False, return_filenames=True)
 #Convert string label into int label
 y_test = [classes.index(e) for e in y_test]
 
@@ -118,5 +118,5 @@ for i in range(len(preds)):
     true_label = int(y_test[i])
     predict_label = int(preds[i])
     if true_label != predict_label:
-        f.write('{0} {1}\n'.format(classes[true_label], classes[predict_label]))
+        f.write('{0} {1} {2}\n'.format(classes[true_label], classes[predict_label], test_filenames[i]))
 f.close()

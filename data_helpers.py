@@ -25,7 +25,7 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
 from os.path import isfile, join
 from os import listdir
 
-def load_data_and_labels(traindir, used_onehot=True):
+def load_data_and_labels(traindir, used_onehot=True, return_filenames=False):
     """
     Loads MR polarity data from files, splits the data into words and generates labels.
     Returns split sentences and labels.
@@ -52,7 +52,10 @@ def load_data_and_labels(traindir, used_onehot=True):
             labels.append(label)
 
     labels = np.array(labels)
-    return x_text, labels
+    if return_filenames:
+        return x_text, labels, train_file_list
+    else:
+        return x_text, labels
 
 import gensim
 def load_embedding_vectors_word2vec(vocabulary, filename, binary):
