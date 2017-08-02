@@ -122,14 +122,6 @@ if FLAGS.traindir != None:
     preds = Get_all_preds(x_test)
     Eval(y_test, preds)
 
-if FLAGS.testdir != None:
-    print '########################'
-    print 'Evaluating on test data'
-    print '########################'
-    x_test, y_test, test_filenames = get_x_test_y_test(FLAGS.testdir)
-    preds = Get_all_preds(x_test)
-    Eval(y_test, preds)
-
 if FLAGS.devdir != None:
     print '########################'
     print 'Evaluating on dev data'
@@ -138,15 +130,23 @@ if FLAGS.devdir != None:
     preds = Get_all_preds(x_test)
     Eval(y_test, preds)
 
-print(metrics.classification_report(y_test, preds))
-print(metrics.confusion_matrix(y_test, preds))
+if FLAGS.testdir != None:
+    print '########################'
+    print 'Evaluating on test data'
+    print '########################'
+    x_test, y_test, test_filenames = get_x_test_y_test(FLAGS.testdir)
+    preds = Get_all_preds(x_test)
+    Eval(y_test, preds)
 
-f = open('error-log.txt', 'wb')
-for i in range(len(preds)):
-    print y_test[i], preds[i]
-    true_label = int(y_test[i])
-    predict_label = int(preds[i])
-    f.write('True Label, Predict label, filename\n')
-    if true_label != predict_label:
-        f.write('{0} {1} {2}\n'.format(classes[true_label], classes[predict_label], test_filenames[i]))
-f.close()
+    print(metrics.classification_report(y_test, preds))
+    print(metrics.confusion_matrix(y_test, preds))
+
+    f = open('error-log.txt', 'wb')
+    for i in range(len(preds)):
+        print y_test[i], preds[i]
+        true_label = int(y_test[i])
+        predict_label = int(preds[i])
+        f.write('True Label, Predict label, filename\n')
+        if true_label != predict_label:
+            f.write('{0} {1} {2}\n'.format(classes[true_label], classes[predict_label], test_filenames[i]))
+    f.close()
