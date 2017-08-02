@@ -76,12 +76,7 @@ with Timing("Loading data..."):
 # Build vocabulary
 import cPickle as pkl
 if FLAGS.trainVocab:
-    from sklearn.feature_extraction.text import CountVectorizer
-    vectorizer = CountVectorizer(min_df=5, max_df=0.5)
-
     with Timing("Building vocabulary...\n"):
-        vectorizer.fit_transform(x_text)
-        vocab = vectorizer.get_feature_names()
         if FLAGS.have_max_len == False:
             maxlen = 0
             for e in x_text:
@@ -154,8 +149,6 @@ with tf.Graph().as_default():
         # Output directory for models and summaries
         # timestamp = str(int(time.time()))
         # timestamp = str(int(time.time()))
-        out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", FLAGS.exp_name))
-        print("Writing to {}\n".format(out_dir))
         #
         # # Summaries for loss and accuracy
         # loss_summary = tf.summary.scalar("loss", cnn.loss)
@@ -163,11 +156,16 @@ with tf.Graph().as_default():
         #
         # # Train Summaries
         # train_summary_op = tf.summary.merge([loss_summary, acc_summary, grad_summaries_merged])
-        train_summary_dir = os.path.join(out_dir, "summaries", "train")
-        train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
 
         # # Dev summaries
         # dev_summary_op = tf.summary.merge([loss_summary, acc_summary])
+
+        out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", FLAGS.exp_name))
+        print("Writing to {}\n".format(out_dir))
+
+        train_summary_dir = os.path.join(out_dir, "summaries", "train")
+        train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
+
         dev_summary_dir = os.path.join(out_dir, "summaries", "dev")
         dev_summary_writer = tf.summary.FileWriter(dev_summary_dir, sess.graph)
 
@@ -229,9 +227,15 @@ with tf.Graph().as_default():
             all_predictions = []
             all_probabilities = None
 
+            feed_dict = {
+                cnn.input_x: x_batch,
+                cnn.input_y: y_batch,
+                cnn.dropout_keep_prob: 1.0
+            }
+
             avg_loss = 0
             for x_dev_batch in batches:
-                preds, loss = sess.run([cnn.predictions, cnn.loss], {cnn.input_x: x_dev_batch, cnn.dropout_keep_prob: 1.0})
+                preds, loss = sess.run([cnn.predictions, cnn.loss], feed_dict)
                 all_predictions = np.concatenate([all_predictions, preds])
                 avg_loss += loss
             avg_loss /= len(batches)
