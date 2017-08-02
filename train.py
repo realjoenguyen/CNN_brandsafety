@@ -256,17 +256,19 @@ with tf.Graph().as_default():
         decay_speed = FLAGS.decay_coefficient*len(y_train)/FLAGS.batch_size
         # Training loop. For each batch...
         counter = 0
-        for current_step, batch in enumerate(batches):
-            learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-counter/decay_speed)
-            counter += 1
-            x_batch, y_batch = zip(*batch)
-            train_step(x_batch, y_batch, learning_rate, step=current_step)
-            # if current_step % FLAGS.evaluate_every == 0:
-            #     print("\nEvaluation:")
-            #     dev_step(x_dev, y_dev)
-            #     print("")
+        with Timing('Training loop. For each batch...\n'):
+            for current_step, batch in enumerate(batches):
+                learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(-counter/decay_speed)
+                counter += 1
+                x_batch, y_batch = zip(*batch)
+                train_step(x_batch, y_batch, learning_rate, step=current_step)
+                # if current_step % FLAGS.evaluate_every == 0:
+                #     print("\nEvaluation:")
+                #     dev_step(x_dev, y_dev)
+                #     print("")
 
-        print 'Dev set: '
-        dev_step(x_dev, y_dev)
+        with Timing('Dev set: ...\n'):
+            dev_step(x_dev, y_dev)
+
         path = saver.save(sess, checkpoint_prefix)
         print("Saved model checkpoint to {}\n".format(path))
