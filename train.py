@@ -56,7 +56,7 @@ with open("config.yml", 'r') as ymlfile:
 
 if FLAGS.pretrain:
     embedding_name = FLAGS.pretrain_data
-    print embedding_name
+    print 'use', embedding_name, 'as pretrain word embedding'
     embedding_dimension = cfg['word_embeddings'][embedding_name]['dimension']
 else:
     embedding_dimension = FLAGS.embedding_dim
@@ -114,8 +114,7 @@ classes = ['Adult', 'Car_accident', 'Death_tragedy', 'Hate_speech', 'Religion', 
 
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(
-      allow_soft_placement=FLAGS.allow_soft_placement,
-      log_device_placement=FLAGS.log_device_placement)
+      allow_soft_placement=FLAGS.allow_soft_placement)
     sess = tf.Session(config=session_conf)
     with sess.as_default():
         cnn = TextCNN(
@@ -127,6 +126,7 @@ with tf.Graph().as_default():
             num_filters=FLAGS.num_filters,
             l1=FLAGS.l1_reg_lambda,
             l2=FLAGS.l2_reg_lambda)
+
         cnn.build_graph()
 
         # Define Training procedure
@@ -165,8 +165,8 @@ with tf.Graph().as_default():
         train_summary_dir = os.path.join(out_dir, "summaries", "train")
         train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
 
-        dev_summary_dir = os.path.join(out_dir, "summaries", "dev")
-        dev_summary_writer = tf.summary.FileWriter(dev_summary_dir, sess.graph)
+        # dev_summary_dir = os.path.join(out_dir, "summaries", "dev")
+        # dev_summary_writer = tf.summary.FileWriter(dev_summary_dir, sess.graph)
 
         # Checkpoint directory. Tensorflow assumes this directory already exists so we need to create it
         checkpoint_dir = os.path.abspath(os.path.join(out_dir, "checkpoints"))
