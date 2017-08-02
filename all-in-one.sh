@@ -17,7 +17,7 @@ python ${CODE_DIR}/train.py \
         --pretrain True \
         --pretrain_data word2vec \
         --trainVocab False \
-        --exp_name newest > train-log.txt 
+        --exp_name newest > train-log.txt
 
 #python ${CODE_DIR}/eval.py \
 #        --testdir ${TESTDIR} \
