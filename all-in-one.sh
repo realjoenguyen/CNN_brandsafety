@@ -20,6 +20,6 @@ python ${CODE_DIR}/train.py \
         --trainVocab False \
         --exp_name newest
 
-python ${CODE_DIR}/eval.py \
-        --testdir ${TESTDIR} \
-        --checkpoint_dir='./run/newest/checkpoints/'
+#python ${CODE_DIR}/eval.py \
+#        --testdir ${TESTDIR} \
+#        --checkpoint_dir='./run/newest/checkpoints/'
