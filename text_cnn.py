@@ -34,7 +34,7 @@ class TextCNN(object):
             self.embedded_chars = tf.nn.embedding_lookup(self.W, self.input_x)
             self.embedded_chars_expanded = tf.expand_dims(self.embedded_chars, -1)
 
-    def _create_convolution_pooling(self):
+    def _create_convolution_pooling_loss(self):
         # Create a convolution + maxpool layer for each filter size
         pooled_outputs = []
         for i, filter_size in enumerate(self.filter_sizes):
@@ -51,6 +51,7 @@ class TextCNN(object):
                     name="conv")
                 # Apply nonlinearity
                 h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
+
                 # Maxpooling over the outputs
                 pooled = tf.nn.max_pool(
                     h,
@@ -69,7 +70,6 @@ class TextCNN(object):
         with tf.name_scope("dropout"):
             self.h_drop = tf.nn.dropout(self.h_pool_flat, self.dropout_keep_prob)
 
-    def _create_loss(self):
         # Final (unnormalized) scores and predictions
         with tf.name_scope("output"):
             W = tf.get_variable(
@@ -77,20 +77,21 @@ class TextCNN(object):
                 shape=[self.num_filters_total, self.num_classes],
                 initializer=tf.contrib.layers.xavier_initializer())
             b = tf.Variable(tf.constant(0.1, shape=[self.num_classes]), name="b")
-            # l2_loss += tf.nn.l2_loss(W)
-            # l2_loss += tf.nn.l2_loss(b)
+            self.l2_loss = tf.nn.l2_loss(W) + tf.nn.l2_loss(b)
             self.scores = tf.nn.xw_plus_b(self.h_drop, W, b, name="scores")
             self.predictions = tf.argmax(self.scores, 1, name="predictions")
 
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):
             losses = tf.nn.softmax_cross_entropy_with_logits(logits=self.scores, labels=self.input_y)
-            self.loss = tf.reduce_mean(losses)
+            self.loss = tf.reduce_mean(losses) + self.l2 * self.l2_loss
 
     def _create_optimizer(self):
-        self.optimizer = tf.train.FtrlOptimizer(learning_rate=self.learning_rate,
-                                                    l1_regularization_strength=self.l1,
-                                                    l2_regularization_strength=self.l2).minimize(self.loss)
+        # self.optimizer = tf.train.FtrlOptimizer(learning_rate=self.learning_rate,
+        #                                             l1_regularization_strength=self.l1,
+        #                                             l2_regularization_strength=self.l2).minimize(self.loss)
+
+        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
     def _create_evaluation(self):
         # Accuracy
@@ -110,8 +111,7 @@ class TextCNN(object):
     def build_graph(self):
         self._create_placeholders()
         self._create_weight()
-        self._create_convolution_pooling()
-        self._create_loss()
+        self._create_convolution_pooling_loss()
         self._create_optimizer()
         self._create_evaluation()
         self._create_summary()
