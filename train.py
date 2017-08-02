@@ -26,9 +26,6 @@ tf.flags.DEFINE_boolean("trainVocab", True, "Use existing vocabulary")
 tf.flags.DEFINE_boolean("pretrain", True, "Enable/disable the word embedding (default: True)")
 tf.flags.DEFINE_string("pretrain_data", None, "use what word embedding data")
 
-tf.flags.DEFINE_boolean("have_max_len", True, "Already have max_len")
-tf.flags.DEFINE_integer("max_len_doc", 4161, "Max distinct words in a document")
-
 tf.flags.DEFINE_integer("embedding_dim", 128, "Dimensionality of character embedding (default: 128)")
 tf.flags.DEFINE_string("filter_sizes", "3,4,5", "Comma-separated filter sizes (default: '3,4,5')")
 tf.flags.DEFINE_integer("num_filters", 128, "Number of filters per filter size (default: 128)")
@@ -77,23 +74,24 @@ with Timing("Loading data..."):
 import cPickle as pkl
 if FLAGS.trainVocab:
     with Timing("Building vocabulary...\n"):
-        if FLAGS.have_max_len == False:
-            maxlen = 0
-            for e in x_text:
-                maxlen = max(maxlen, len(set(e.split())))
-            print 'sequence size =', maxlen
+        maxlen = 0
+        for e in x_text:
+            maxlen = max(maxlen, len(set(e.split())))
+        print 'sequence size =', maxlen
 
-        maxlen = FLAGS.max_len_doc
-        max_document_length = max([len(x.split(" ")) for x in x_text])
         vocab_processor = learn.preprocessing.VocabularyProcessor(maxlen)
         x = np.array(list(vocab_processor.fit_transform(x_text)))
 
-        pkl.dump(vocab_processor, open('vocab.pkl', "wb"))
-        pkl.dump(x, open('x.pkl', "wb"))
+        with open('vocab.pkl', "wb") as fp:
+            pkl.dump(vocab_processor, fp)
+            pkl.dump(x, fp)
+            pkl.dump(maxlen, fp)
 else:
     with Timing('Loading ...\n'):
-        vocab_processor = pkl.load(open('vocab.pkl', 'rb'))
-        x = pkl.load(open('x.pkl', 'rb'))
+        with open('vocab.pkl', "rb") as fp:
+            vocab_processor = pkl.load(fp)
+            x = pkl.load(fp)
+            maxlen = pkl.load(fp)
 
 # Randomly shuffle data
 np.random.seed(10)
@@ -108,6 +106,7 @@ x_train, x_dev = x_shuffled[:dev_sample_index], x_shuffled[dev_sample_index:]
 y_train, y_dev = y_shuffled[:dev_sample_index], y_shuffled[dev_sample_index:]
 print("Vocabulary Size: {:d}".format(len(vocab_processor.vocabulary_)))
 print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
+print 'Dev: ', len(x_dev), len(y_dev)
 classes = ['Adult', 'Car_accident', 'Death_tragedy', 'Hate_speech', 'Religion', 'Safe']
 
 # Training

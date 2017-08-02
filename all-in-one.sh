@@ -16,7 +16,6 @@ python ${CODE_DIR}/train.py \
         --traindir ${TRAINDIR} \
         --pretrain True \
         --pretrain_data word2vec \
-        --have_max_len False \
         --trainVocab False \
         --exp_name newest
 
