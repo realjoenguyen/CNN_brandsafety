@@ -49,7 +49,7 @@ import cPickle as pkl
 with Timing('Loading vocab...\n'):
     vocab_processor = pkl.load(open('vocab.pkl', 'rb'))
 
-def get_x_vector_y_index(x_raw=None, y_labels=None, dir=None, get_listfiles=False):
+def get_x_vector_y_index(x_raw=None, y_labels=None, dir=None):
     test_filenames = None
     if dir != None:
         x_raw, y_labels, test_filenames = data_helpers.load_data_and_labels(dir, used_onehot=False, return_filenames=True)
@@ -60,7 +60,7 @@ def get_x_vector_y_index(x_raw=None, y_labels=None, dir=None, get_listfiles=Fals
 
     with Timing('Transform test x_raw...\n'):
         x_vector = np.array(list(vocab_processor.transform(x_raw)))
-    if get_listfiles:
+    if dir != None:
         return x_vector, y_index, test_filenames
     else:
         return x_vector, y_index
