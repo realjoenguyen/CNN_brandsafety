@@ -100,8 +100,8 @@ def Get_all_preds(test_data):
 
                 for x_test_batch in batches:
                     # batch_predictions_scores = sess.run([predictions, scores], {input_x: x_test_batch, dropout_keep_prob: 1.0})
-                    preds = sess.run([predictions, scores], {input_x: x_test_batch, dropout_keep_prob: 1.0})
-                    all_predictions = np.concatenate([all_predictions, preds])
+                    batch_predictions_scores = sess.run([predictions, scores], {input_x: x_test_batch, dropout_keep_prob: 1.0})
+                    all_predictions = np.concatenate([all_predictions, batch_predictions_scores[0]])
                     # probabilities = softmax(batch_predictions_scores[1])
                     # if all_probabilities is not None:
                     #     all_probabilities = np.concatenate([all_probabilities, probabilities])
