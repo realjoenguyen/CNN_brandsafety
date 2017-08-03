@@ -155,7 +155,6 @@ if FLAGS.testdir != None:
 
     f = open('error-log.txt', 'wb')
     for i in range(len(preds)):
-        print y_test[i], preds[i]
         true_label = int(y_test[i])
         predict_label = int(preds[i])
         f.write('True Label, Predict label, filename\n')
