@@ -21,4 +21,4 @@ python ${CODE_DIR}/train.py \
 
 #python ${CODE_DIR}/eval.py \
 #        --testdir ${TESTDIR} \
-#        --checkpoint_dir='./run/newest/checkpoints/'
+#        --checkpoint_dir='./runs/newest/checkpoints/'

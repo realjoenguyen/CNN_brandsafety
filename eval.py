@@ -61,7 +61,6 @@ def get_x_test_y_test(dir):
 
 def Get_all_preds(test_data):
     with Timing("\nEvaluating...\n"):
-        # Evaluation
         # ==================================================
         checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)
         graph = tf.Graph()
