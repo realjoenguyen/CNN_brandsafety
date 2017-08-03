@@ -2,8 +2,8 @@
 # Step 1: Prepare text files:
 #build vocab
 . ./set_path.sh
-rm -rf ${DATA_OWN}
-mkdir -pv ${DATA_OWN}
+#rm -rf ${DATA_OWN}
+#mkdir -pv ${DATA_OWN}
 
 #build vocab
 #python ${PREPROCESS_DIR}/build_vocab.py ${TRAINDIR} ${DATA_OWN}/vocab.pkl
