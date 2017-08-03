@@ -46,7 +46,7 @@ print("")
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 import cPickle as pkl
-with Timing('Loading vocab...\n'):
+with Timing('Loading vocab...'):
     vocab_processor = pkl.load(open('vocab.pkl', 'rb'))
 
 def get_x_vector_y_index(x_raw=None, y_labels=None, dir=None):
@@ -58,7 +58,7 @@ def get_x_vector_y_index(x_raw=None, y_labels=None, dir=None):
     y_index = [classes.index(e) for e in y_labels]
     # Map data into vocabulary
 
-    with Timing('Transform test x_raw...\n'):
+    with Timing('Transform test x_raw...'):
         x_vector = np.array(list(vocab_processor.transform(x_raw)))
     if dir != None:
         return x_vector, y_index, test_filenames
@@ -66,7 +66,7 @@ def get_x_vector_y_index(x_raw=None, y_labels=None, dir=None):
         return x_vector, y_index
 
 def Get_all_preds(test_data):
-    with Timing("\nEvaluating...\n"):
+    with Timing("Evaluating..."):
         # ==================================================
         checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)
         graph = tf.Graph()
@@ -111,7 +111,7 @@ def Get_all_preds(test_data):
 
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, make_scorer
 def Eval(y_test, preds):
-    with Timing("Evaluating model ..."):
+    with Timing("Evaluating metrics ..."):
         f1 = f1_score(y_test, preds, pos_label=None, average='macro')
         precision = precision_score(y_test, preds, pos_label=None, average='macro')
         recall = recall_score(y_test, preds, pos_label=None, average='macro')
