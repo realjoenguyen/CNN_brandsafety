@@ -17,10 +17,10 @@ python ${CODE_DIR}/train.py \
         --pretrain True \
         --pretrain_data word2vec \
         --trainVocab False \
-        --exp_name newest > train-log.txt
+        --exp_name baseline > train-log-baseline.txt
 
 python ${CODE_DIR}/eval.py \
         --traindir ${TRAINDIR} \
         --testdir ${TESTDIR} \
         --dev True \
-        --checkpoint_dir='./runs/newest/checkpoints/'
+        --checkpoint_dir='./runs/baseline/checkpoints/' > test-log-basaeline.txt
