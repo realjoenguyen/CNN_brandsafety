@@ -52,7 +52,7 @@ with Timing('Loading vocab...\n'):
 def get_x_vector_y_index(x_raw=None, y_labels=None, dir=None, get_listfiles=False):
     test_filenames = None
     if dir != None:
-        x_raw, y_index, test_filenames = data_helpers.load_data_and_labels(dir, used_onehot=False, return_filenames=True)
+        x_raw, y_labels, test_filenames = data_helpers.load_data_and_labels(dir, used_onehot=False, return_filenames=True)
 
     #Convert string label into int label
     y_index = [classes.index(e) for e in y_labels]
