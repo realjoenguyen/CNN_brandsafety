@@ -109,10 +109,11 @@ print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
 print 'Dev: ', len(x_dev), len(y_dev)
 
 classes = ['Adult', 'Car_accident', 'Death_tragedy', 'Hate_speech', 'Religion', 'Safe']
-# with open('dev_set.pkl', "wb") as fp:
-#     y_dev = [classes[np.argmax(e)] for e in y_dev]
-#     pkl.dump(x_dev, fp)
-#     pkl.dump(y_dev, fp)
+with Timing('Creating dev set ...\n'):
+    with open('dev_set.pkl', "wb") as fp:
+        y_dev = [classes[np.argmax(e)] for e in y_dev]
+        pkl.dump(x_dev, fp)
+        pkl.dump(y_dev, fp)
 
 # Training
 # ==================================================

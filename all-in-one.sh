@@ -22,4 +22,5 @@ mkdir -pv ${DATA_OWN}
 python ${CODE_DIR}/eval.py \
         --traindir ${TRAINDIR} \
         --testdir ${TESTDIR} \
+        --dev True \
         --checkpoint_dir='./runs/newest/checkpoints/'

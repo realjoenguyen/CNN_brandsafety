@@ -30,7 +30,7 @@ tf.flags.DEFINE_integer("batch_size", 32, "Batch Size (default: 64)")
 tf.flags.DEFINE_string("checkpoint_dir", None, "Checkpoint directory from training run")
 tf.flags.DEFINE_string("testdir", None, "Test directory")
 tf.flags.DEFINE_string("traindir", None, "Train directory")
-tf.flags.DEFINE_string("devdir", None, "Dev directory")
+tf.flags.DEFINE_bool("dev", False, "Dev directory")
 
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
@@ -127,17 +127,17 @@ if FLAGS.traindir != None:
     preds = Get_all_preds(x_test)
     Eval(y_test, preds)
 
-# if FLAGS.devdir != None:
-#     print '########################'
-#     print 'Evaluating on dev data'
-#     print '########################'
-#     with open('dev_set.pkl', "rb") as fp:
-#         x_dev = pkl.load(fp)
-#         y_dev = pkl.load(fp)
-#
-#     x_dev_t, y_dev_t, _ = get_x_vector_y_index(x_raw=x_dev, y_labels=y_dev)
-#     preds = Get_all_preds(x_test)
-#     Eval(y_test, preds)
+if FLAGS.dev:
+    print '########################'
+    print 'Evaluating on dev data'
+    print '########################'
+    with open('dev_set.pkl', "rb") as fp:
+        x_dev = pkl.load(fp)
+        y_dev = pkl.load(fp)
+
+    x_dev_t, y_dev_t, _ = get_x_vector_y_index(x_raw=x_dev, y_labels=y_dev)
+    preds = Get_all_preds(x_dev_t)
+    Eval(y_dev_t, preds)
 
 if FLAGS.testdir != None:
     print '########################'
