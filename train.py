@@ -105,9 +105,14 @@ dev_sample_index = -1 * int(FLAGS.dev_sample_percentage * float(len(y)))
 x_train, x_dev = x_shuffled[:dev_sample_index], x_shuffled[dev_sample_index:]
 y_train, y_dev = y_shuffled[:dev_sample_index], y_shuffled[dev_sample_index:]
 print("Vocabulary Size: {:d}".format(len(vocab_processor.vocabulary_)))
-# print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
-# print 'Dev: ', len(x_dev), len(y_dev)
+print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
+print 'Dev: ', len(x_dev), len(y_dev)
+
 classes = ['Adult', 'Car_accident', 'Death_tragedy', 'Hate_speech', 'Religion', 'Safe']
+# with open('dev_set.pkl', "wb") as fp:
+#     y_dev = [classes[np.argmax(e)] for e in y_dev]
+#     pkl.dump(x_dev, fp)
+#     pkl.dump(y_dev, fp)
 
 # Training
 # ==================================================

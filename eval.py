@@ -49,15 +49,21 @@ import cPickle as pkl
 with Timing('Loading vocab...\n'):
     vocab_processor = pkl.load(open('vocab.pkl', 'rb'))
 
-def get_x_test_y_test(dir):
-    x_raw, y_test, test_filenames = data_helpers.load_data_and_labels(dir, used_onehot=False, return_filenames=True)
+def get_x_vector_y_index(x_raw=None, y_labels=None, dir=None, get_listfiles=False):
+    test_filenames = None
+    if dir != None:
+        x_raw, y_index, test_filenames = data_helpers.load_data_and_labels(dir, used_onehot=False, return_filenames=True)
+
     #Convert string label into int label
-    y_test = [classes.index(e) for e in y_test]
+    y_index = [classes.index(e) for e in y_labels]
     # Map data into vocabulary
 
     with Timing('Transform test x_raw...\n'):
-        x_test = np.array(list(vocab_processor.transform(x_raw)))
-    return x_test, y_test, test_filenames
+        x_vector = np.array(list(vocab_processor.transform(x_raw)))
+    if get_listfiles:
+        return x_vector, y_index, test_filenames
+    else:
+        return x_vector, y_index
 
 def Get_all_preds(test_data):
     with Timing("\nEvaluating...\n"):
@@ -117,23 +123,27 @@ if FLAGS.traindir != None:
     print '########################'
     print 'Evaluating on train data'
     print '########################'
-    x_test, y_test, _ = get_x_test_y_test(FLAGS.traindir)
+    x_test, y_test, _ = get_x_vector_y_index(dir=FLAGS.traindir)
     preds = Get_all_preds(x_test)
     Eval(y_test, preds)
 
-if FLAGS.devdir != None:
-    print '########################'
-    print 'Evaluating on dev data'
-    print '########################'
-    x_test, y_test, test_filenames = get_x_test_y_test(FLAGS.devdir)
-    preds = Get_all_preds(x_test)
-    Eval(y_test, preds)
+# if FLAGS.devdir != None:
+#     print '########################'
+#     print 'Evaluating on dev data'
+#     print '########################'
+#     with open('dev_set.pkl', "rb") as fp:
+#         x_dev = pkl.load(fp)
+#         y_dev = pkl.load(fp)
+#
+#     x_dev_t, y_dev_t, _ = get_x_vector_y_index(x_raw=x_dev, y_labels=y_dev)
+#     preds = Get_all_preds(x_test)
+#     Eval(y_test, preds)
 
 if FLAGS.testdir != None:
     print '########################'
     print 'Evaluating on test data'
     print '########################'
-    x_test, y_test, test_filenames = get_x_test_y_test(FLAGS.testdir)
+    x_test, y_test, test_filenames = get_x_vector_y_index(FLAGS.testdir)
     preds = Get_all_preds(x_test)
     Eval(y_test, preds)
 
