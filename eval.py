@@ -123,9 +123,10 @@ if FLAGS.traindir != None:
     print '########################'
     print 'Evaluating on train data'
     print '########################'
-    x_test, y_test, _ = get_x_vector_y_index(dir=FLAGS.traindir)
-    preds = Get_all_preds(x_test)
-    Eval(y_test, preds)
+    x_train_t, y_train_t, _ = get_x_vector_y_index(dir=FLAGS.traindir)
+    preds = Get_all_preds(x_train_t)
+    print 'Check len', len(preds), len(y_train_t)
+    Eval(y_train_t, preds)
 
 if FLAGS.dev:
     print '########################'
@@ -137,6 +138,7 @@ if FLAGS.dev:
 
     x_dev_t, y_dev_t, _ = get_x_vector_y_index(x_raw=x_dev, y_labels=y_dev)
     preds = Get_all_preds(x_dev_t)
+    print 'Check len', len(preds), len(y_dev_t)
     Eval(y_dev_t, preds)
 
 if FLAGS.testdir != None:
@@ -145,6 +147,7 @@ if FLAGS.testdir != None:
     print '########################'
     x_test, y_test, test_filenames = get_x_vector_y_index(FLAGS.testdir)
     preds = Get_all_preds(x_test)
+    print 'Check len', len(preds), len(y_test)
     Eval(y_test, preds)
 
     print(metrics.classification_report(y_test, preds))
