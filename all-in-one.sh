@@ -20,5 +20,6 @@ mkdir -pv ${DATA_OWN}
 #        --exp_name newest > train-log.txt
 
 python ${CODE_DIR}/eval.py \
+        --traindir ${TRAINDIR} \
         --testdir ${TESTDIR} \
         --checkpoint_dir='./runs/newest/checkpoints/'

@@ -91,7 +91,9 @@ class TextCNN(object):
         #                                             l1_regularization_strength=self.l1,
         #                                             l2_regularization_strength=self.l2).minimize(self.loss)
 
-        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
+        # self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
+        #Adadelta (Zeiler, 2012) gave similar results to Adagrad (Duchi et al., 2011) but required fewer epochs.
+        self.optimizer = tf.train.AdadeltaOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
     def _create_evaluation(self):
         # Accuracy

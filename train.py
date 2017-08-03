@@ -105,8 +105,8 @@ dev_sample_index = -1 * int(FLAGS.dev_sample_percentage * float(len(y)))
 x_train, x_dev = x_shuffled[:dev_sample_index], x_shuffled[dev_sample_index:]
 y_train, y_dev = y_shuffled[:dev_sample_index], y_shuffled[dev_sample_index:]
 print("Vocabulary Size: {:d}".format(len(vocab_processor.vocabulary_)))
-print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
-print 'Dev: ', len(x_dev), len(y_dev)
+# print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
+# print 'Dev: ', len(x_dev), len(y_dev)
 classes = ['Adult', 'Car_accident', 'Death_tragedy', 'Hate_speech', 'Religion', 'Safe']
 
 # Training
@@ -217,35 +217,35 @@ with tf.Graph().as_default():
                         .format(time_str, step, loss, accuracy, learning_rate))
             train_summary_writer.add_summary(summaries, step)
 
-        def dev_step(x_batch, y_batch, writer=None):
-            """
-            Evaluates model on a dev set
-            """
-            batches = data_helpers.batch_iter(x_batch, FLAGS.batch_size, 1, shuffle=False)
-            # Collect the predictions here
-            all_predictions = []
-            all_probabilities = None
-
-            feed_dict = {
-                cnn.input_x: x_batch,
-                # cnn.input_y: y_batch,
-                cnn.dropout_keep_prob: 1.0
-            }
-
-            # avg_loss = 0
-            for x_dev_batch in batches:
-                preds = sess.run([cnn.predictions], feed_dict)
-                all_predictions = np.concatenate([all_predictions, preds])
-                # avg_loss += loss
-            # avg_loss /= len(batches)
-
-            precision = precision_score(y_batch, all_predictions, pos_label=None, average='macro')
-            # print 'precision: {0}, avg_loss: {1}\n'.format(precision, avg_loss)
-            print 'precision: {0}\n'.format(precision)
-            # time_str = datetime.datetime.now().isoformat()
-            # print("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
-            # if writer:
-            #     writer.add_summary(summaries, step)
+        # def dev_step(x_batch, y_batch, writer=None):
+        #     """
+        #     Evaluates model on a dev set
+        #     """
+        #     batches = data_helpers.batch_iter(x_batch, FLAGS.batch_size, 1, shuffle=False)
+        #     # Collect the predictions here
+        #     all_predictions = []
+        #     all_probabilities = None
+        #
+        #     feed_dict = {
+        #         cnn.input_x: x_batch,
+        #         # cnn.input_y: y_batch,
+        #         cnn.dropout_keep_prob: 1.0
+        #     }
+        #
+        #     # avg_loss = 0
+        #     for x_dev_batch in batches:
+        #         preds = sess.run([cnn.predictions], feed_dict)
+        #         all_predictions = np.concatenate([all_predictions, preds])
+        #         # avg_loss += loss
+        #     # avg_loss /= len(batches)
+        #
+        #     precision = precision_score(y_batch, all_predictions, pos_label=None, average='macro')
+        #     # print 'precision: {0}, avg_loss: {1}\n'.format(precision, avg_loss)
+        #     print 'precision: {0}\n'.format(precision)
+        #     # time_str = datetime.datetime.now().isoformat()
+        #     # print("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
+        #     # if writer:
+        #     #     writer.add_summary(summaries, step)
 
         # Generate batches
         batches = data_helpers.batch_iter(
@@ -267,11 +267,11 @@ with tf.Graph().as_default():
                 #     dev_step(x_dev, y_dev)
                 #     print("")
 
-        with Timing('Training set: ...\n'):
-            dev_step(x_train, y_train)
+        # with Timing('Training set: ...\n'):
+        #     dev_step(x_train, y_train)
 
-        with Timing('Dev set: ...\n'):
-            dev_step(x_dev, y_dev)
+        # with Timing('Dev set: ...\n'):
+        #     dev_step(x_dev, y_dev)
 
         path = saver.save(sess, checkpoint_prefix)
         print("Saved model checkpoint to {}\n".format(path))
