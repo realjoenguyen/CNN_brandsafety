@@ -145,7 +145,7 @@ if FLAGS.testdir != None:
     print '########################'
     print 'Evaluating on test data'
     print '########################'
-    x_test, y_test, test_filenames = get_x_vector_y_index(FLAGS.testdir)
+    x_test, y_test, test_filenames = get_x_vector_y_index(dir=FLAGS.testdir)
     preds = Get_all_preds(x_test)
     print 'Check len', len(preds), len(y_test)
     Eval(y_test, preds)
