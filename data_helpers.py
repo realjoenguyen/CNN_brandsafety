@@ -58,13 +58,12 @@ def load_data_and_labels(traindir, used_onehot=True, return_filenames=False):
         return x_text, labels
 
 import gensim
-def load_embedding_vectors_word2vec(vocabulary, filename, binary):
-    # embedding_vectors = np.zeros((len(vocabulary), 300))
-    #When randomly initializing words not in word2vec, we obtained slight improve-ments by sampling each dimension from
-    # variance as the pre-trained ones. It would be interesting to see if employing
-    # more sophisticated methods to mirror the distribution of pre-trained vectors in the initialization process gives further improvements.
-    embedding_vectors = np.random.uniform(-0.25, 0.25, (len(vocabulary), 300))
-
+def load_embedding_vectors_word2vec(vocabulary, filename, randomly):
+    if randomly:
+        embedding_vectors = np.random.uniform(-0.25, 0.25, (len(vocabulary), 300))
+    else:
+        embedding_vectors = np.zeros((len(vocabulary), 300))
+        
     vocab_dict = vocabulary._mapping
     sorted_vocab = sorted(vocab_dict.items(), key=lambda x: x[1])
     vocabulary = list(list(zip(*sorted_vocab))[0])
