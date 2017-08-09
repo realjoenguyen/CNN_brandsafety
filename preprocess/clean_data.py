@@ -54,6 +54,7 @@ for true_filename in file_list:
     f_reader = open(file_path, "r")
     raw = f_reader.read()
     raw = NormalizationText.normalize_to_unicode(raw).strip()
+    raw = raw.lower() 
     # raw = raw.decode('utf-8').strip()
     # raw = remove_duplicate(raw)
     for e in REPLACE_WORDS:
