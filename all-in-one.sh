@@ -23,9 +23,8 @@ python ${CODE_DIR}/train.py \
         --L2 3 \
         --num_filters 100 \
         --dropout_keep_prob 0.5 \
-        --num_epochs 10 > train-log-baseline.txt
-
-python ${CODE_DIR}/eval.py \
+        --num_epochs 10 > train-log-baseline.txt \
+&& python ${CODE_DIR}/eval.py \
         --traindir ${TRAINDIR} \
         --testdir ${TESTDIR} \
         --dev True \
@@ -44,9 +43,8 @@ python ${CODE_DIR}/train.py \
         --L2 3 \
         --num_filters 100 \
         --dropout_keep_prob 0.5 \
-        --num_epochs 10 > train-log-baseline-random.txt
-
-python ${CODE_DIR}/eval.py \
+        --num_epochs 10 > train-log-baseline-random.txt \
+&& python ${CODE_DIR}/eval.py \
         --traindir ${TRAINDIR} \
         --testdir ${TESTDIR} \
         --dev True \
