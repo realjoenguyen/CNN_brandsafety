@@ -12,25 +12,6 @@ mkdir -pv ${DATA_OWN}
 #mkdir -pv ${TRAINDIR_REDUCED} ${TESTDIR_REDUCED}
 #python ${PREPROCESS_DIR}/reduce_vocab.py ${TRAINDIR} ${TRAINDIR_REDUCED} ${DATA_OWN}/vocab.pkl 20000
 #python ${PREPROCESS_DIR}/reduce_vocab.py ${TESTDIR} ${TESTDIR_REDUCED} ${DATA_OWN}/vocab.pkl 20000
-python ${CODE_DIR}/train.py \
-        --traindir ${TRAINDIR} \
-        --pretrain True \
-        --pretrain_data word2vec \
-        --trainVocab True \
-        --exp_name baseline \
-        --init_word2vec_random False \
-        --batch_size 40 \
-        --L2 3 \
-        --num_filters 100 \
-        --dropout_keep_prob 0.5 \
-        --num_epochs 10 > train-log-baseline.txt \
-&& python ${CODE_DIR}/eval.py \
-        --traindir ${TRAINDIR} \
-        --testdir ${TESTDIR} \
-        --dev True \
-        --checkpoint_dir='./runs/baseline/checkpoints/' > test-log-baseline.txt
-
-#FIRST
 
 python ${CODE_DIR}/train.py \
         --traindir ${TRAINDIR} \
@@ -49,3 +30,4 @@ python ${CODE_DIR}/train.py \
         --testdir ${TESTDIR} \
         --dev True \
         --checkpoint_dir='./runs/baseline_random/checkpoints/' > test-log-baseline_random.txt
+
