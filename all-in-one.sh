@@ -20,16 +20,16 @@ python ${CODE_DIR}/train.py \
         --exp_name baseline \
         --init_word2vec_random False \
         --batch_size 40 \
-        --L2 0 \
+        --L2 3 \
         --num_filters 100 \
         --dropout_keep_prob 0.5 \
-        --num_epochs 15 > train-log-baseline.txt
+        --num_epochs 10 > train-log-baseline.txt
 
 python ${CODE_DIR}/eval.py \
         --traindir ${TRAINDIR} \
         --testdir ${TESTDIR} \
         --dev True \
-        --checkpoint_dir='./runs/baseline/checkpoints/' > test-log-basaeline.txt
+        --checkpoint_dir='./runs/baseline/checkpoints/' > test-log-baseline.txt
 
 #FIRST
 
@@ -39,15 +39,15 @@ python ${CODE_DIR}/train.py \
         --pretrain_data word2vec \
         --trainVocab False \
         --exp_name baseline_random \
-        --init_word2vec_random False \
+        --init_word2vec_random True \
         --batch_size 40 \
-        --L2 0 \
+        --L2 3 \
         --num_filters 100 \
         --dropout_keep_prob 0.5 \
-        --num_epochs 15 > train-log-baseline-random.txt
+        --num_epochs 10 > train-log-baseline-random.txt
 
 python ${CODE_DIR}/eval.py \
         --traindir ${TRAINDIR} \
         --testdir ${TESTDIR} \
         --dev True \
-        --checkpoint_dir='./runs/baseline_random/checkpoints/' > test-log-basaeline_random.txt
+        --checkpoint_dir='./runs/baseline_random/checkpoints/' > test-log-baseline_random.txt
