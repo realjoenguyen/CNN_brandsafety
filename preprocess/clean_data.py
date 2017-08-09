@@ -61,9 +61,9 @@ for true_filename in file_list:
 
     words = list(gensim.utils.tokenize(raw, lowercase=True))
     words = [e for e in words if e.lower() not in STOP_WORDS and len(e) < 15 and not contain_digit(e)]
-    from nltk.stem.wordnet import WordNetLemmatizer
-    lmtzr = WordNetLemmatizer()
-    words = [lmtzr.lemmatize(e) for e in words]
+    # from nltk.stem.wordnet import WordNetLemmatizer
+    # lmtzr = WordNetLemmatizer()
+    # words = [lmtzr.lemmatize(e) for e in words]
     content = ' '.join(words)
 
     output_file_path = join(output_dir, true_filename)
