@@ -60,7 +60,7 @@ for true_filename in file_list:
         raw.replace(e, '')
 
     words = list(gensim.utils.tokenize(raw, lowercase=True))
-    words = [e for e in words if e.lower() not in STOP_WORDS_origin and len(e) < 15 and not contain_digit(e)]
+    words = [e for e in words if e.lower() not in STOP_WORDS_origin() and len(e) < 15 and not contain_digit(e)]
     # from nltk.stem.wordnet import WordNetLemmatizer
     # lmtzr = WordNetLemmatizer()
     # words = [lmtzr.lemmatize(e) for e in words]
