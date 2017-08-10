@@ -17,17 +17,109 @@ python ${CODE_DIR}/train.py \
         --traindir ${TRAINDIR} \
         --pretrain True \
         --pretrain_data word2vec \
-        --trainVocab False \
-        --exp_name baseline_random \
-        --init_word2vec_random True \
+        --trainVocab True \
+        --exp_name _128 \
+        --init_word2vec_random False \
         --batch_size 40 \
         --L2 3 \
-        --num_filters 100 \
+        --num_filters 128 \
         --dropout_keep_prob 0.5 \
-        --num_epochs 10 > train-log-baseline-random.txt \
+        --num_epochs 15 > train-log-_128.txt \
 && python ${CODE_DIR}/eval.py \
         --traindir ${TRAINDIR} \
         --testdir ${TESTDIR} \
         --dev True \
-        --checkpoint_dir='./runs/baseline_random/checkpoints/' > test-log-baseline_random.txt
+        --checkpoint_dir='./runs/_128/checkpoints/' > test-log-_128.txt
+
+python ${CODE_DIR}/train.py \
+        --traindir ${TRAINDIR} \
+        --pretrain True \
+        --pretrain_data word2vec \
+        --trainVocab False \
+        --exp_name _200 \
+        --init_word2vec_random False \
+        --batch_size 40 \
+        --L2 3 \
+        --num_filters 200 \
+        --dropout_keep_prob 0.5 \
+        --num_epochs 15 > train-log-_200.txt \
+&& python ${CODE_DIR}/eval.py \
+        --traindir ${TRAINDIR} \
+        --testdir ${TESTDIR} \
+        --dev True \
+        --checkpoint_dir='./runs/_200/checkpoints/' > test-log-_200.txt
+
+python ${CODE_DIR}/train.py \
+        --traindir ${TRAINDIR} \
+        --pretrain True \
+        --pretrain_data word2vec \
+        --trainVocab False \
+        --exp_name _300 \
+        --init_word2vec_random False \
+        --batch_size 40 \
+        --L2 3 \
+        --num_filters 300 \
+        --dropout_keep_prob 0.5 \
+        --num_epochs 15 > train-log-_300.txt \
+&& python ${CODE_DIR}/eval.py \
+        --traindir ${TRAINDIR} \
+        --testdir ${TESTDIR} \
+        --dev True \
+        --checkpoint_dir='./runs/_300/checkpoints/' > test-log-_300.txt
+
+python ${CODE_DIR}/train.py \
+        --traindir ${TRAINDIR} \
+        --pretrain True \
+        --pretrain_data word2vec \
+        --trainVocab False \
+        --exp_name _400 \
+        --init_word2vec_random False \
+        --batch_size 40 \
+        --L2 3 \
+        --num_filters 400 \
+        --dropout_keep_prob 0.5 \
+        --num_epochs 15 > train-log-_400.txt \
+&& python ${CODE_DIR}/eval.py \
+        --traindir ${TRAINDIR} \
+        --testdir ${TESTDIR} \
+        --dev True \
+        --checkpoint_dir='./runs/_400/checkpoints/' > test-log-_400.txt
+
+
+python ${CODE_DIR}/train.py \
+        --traindir ${TRAINDIR} \
+        --pretrain True \
+        --pretrain_data word2vec \
+        --trainVocab False \
+        --exp_name _500 \
+        --init_word2vec_random False \
+        --batch_size 40 \
+        --L2 3 \
+        --num_filters 500 \
+        --dropout_keep_prob 0.5 \
+        --num_epochs 15 > train-log-_500.txt \
+&& python ${CODE_DIR}/eval.py \
+        --traindir ${TRAINDIR} \
+        --testdir ${TESTDIR} \
+        --dev True \
+        --checkpoint_dir='./runs/_500/checkpoints/' > test-log-_500.txt
+
+
+python ${CODE_DIR}/train.py \
+        --traindir ${TRAINDIR} \
+        --pretrain True \
+        --pretrain_data word2vec \
+        --trainVocab False \
+        --exp_name _600 \
+        --init_word2vec_random False \
+        --batch_size 40 \
+        --L2 3 \
+        --num_filters 600 \
+        --dropout_keep_prob 0.5 \
+        --num_epochs 15 > train-log-_600.txt \
+&& python ${CODE_DIR}/eval.py \
+        --traindir ${TRAINDIR} \
+        --testdir ${TESTDIR} \
+        --dev True \
+        --checkpoint_dir='./runs/_600/checkpoints/' > test-log-_600.txt
 
