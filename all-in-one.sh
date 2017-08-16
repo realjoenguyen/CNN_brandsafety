@@ -36,7 +36,7 @@ python ${CODE_DIR}/train.py \
         --traindir ${TRAINDIR} \
         --pretrain True \
         --pretrain_data word2vec \
-        --trainVocab True \
+        --trainVocab False \
         --exp_name _128 \
         --init_word2vec_random False \
         --batch_size 40 \`
