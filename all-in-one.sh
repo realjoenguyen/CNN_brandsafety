@@ -39,7 +39,7 @@ python ${CODE_DIR}/train.py \
         --trainVocab False \
         --exp_name _128 \
         --init_word2vec_random False \
-        --batch_size 40 \`
+        --batch_size 40 \
         --L2 3 \
         --num_filters 128 \
         --dropout_keep_prob 0.5 \
