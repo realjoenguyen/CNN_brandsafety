@@ -13,43 +13,43 @@ mkdir -pv ${DATA_OWN}
 #python ${PREPROCESS_DIR}/reduce_vocab.py ${TRAINDIR} ${TRAINDIR_REDUCED} ${DATA_OWN}/vocab.pkl 20000
 #python ${PREPROCESS_DIR}/reduce_vocab.py ${TESTDIR} ${TESTDIR_REDUCED} ${DATA_OWN}/vocab.pkl 20000
 
-python ${CODE_DIR}/train.py \
-        --traindir ${TRAINDIR} \
-        --pretrain True \
-        --pretrain_data word2vec \
-        --trainVocab True \
-        --exp_name _100 \
-        --init_word2vec_random False \
-        --batch_size 40 \
-        --L2 10 \
-        --num_filters 100 \
-        --dropout_keep_prob 0.6 \
-        --num_epochs 10 > train-log-_100.txt \
-&& python ${CODE_DIR}/eval.py \
-        --traindir ${TRAINDIR} \
-        --testdir ${TESTDIR} \
-        --dev True \
-        --checkpoint_dir='./runs/_100/checkpoints/' > test-log-_100.txt \
-&& rm -rf './runs/_100/checkpoints/'
-
 #python ${CODE_DIR}/train.py \
 #        --traindir ${TRAINDIR} \
 #        --pretrain True \
 #        --pretrain_data word2vec \
-#        --trainVocab False \
-#        --exp_name _128 \
+#        --trainVocab True \
+#        --exp_name _100 \
 #        --init_word2vec_random False \
 #        --batch_size 40 \
-#        --L2 3 \
-#        --num_filters 128 \
+#        --L2 20 \
+#        --num_filters 100 \
 #        --dropout_keep_prob 0.5 \
-#        --num_epochs 10 > train-log-_128.txt \
+#        --num_epochs 10 > train-log-_100.txt \
 #&& python ${CODE_DIR}/eval.py \
 #        --traindir ${TRAINDIR} \
 #        --testdir ${TESTDIR} \
 #        --dev True \
-#        --checkpoint_dir='./runs/_128/checkpoints/' > test-log-_128.txt \
-#&& rm -rf './runs/_128/checkpoints/'
+#        --checkpoint_dir='./runs/_100/checkpoints/' > test-log-_100.txt \
+#&& rm -rf './runs/_100/checkpoints/'
+
+python ${CODE_DIR}/train.py \
+        --traindir ${TRAINDIR} \
+        --pretrain True \
+        --pretrain_data word2vec \
+        --trainVocab False \
+        --exp_name _128 \
+        --init_word2vec_random False \
+        --batch_size 40 \
+        --L2 20 \
+        --num_filters 150 \
+        --dropout_keep_prob 0.5 \
+        --num_epochs 10 > train-log-_128.txt \
+&& python ${CODE_DIR}/eval.py \
+        --traindir ${TRAINDIR} \
+        --testdir ${TESTDIR} \
+        --dev True \
+        --checkpoint_dir='./runs/_128/checkpoints/' > test-log-_128.txt \
+&& rm -rf './runs/_128/checkpoints/'
 #
 ##
 ##python ${CODE_DIR}/train.py \
