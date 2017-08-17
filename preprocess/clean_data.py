@@ -54,7 +54,7 @@ for true_filename in file_list:
     f_reader = open(file_path, "r")
     raw = f_reader.read()
     raw = NormalizationText.normalize_to_unicode(raw).strip()
-    raw = raw.lower() 
+    raw = raw.lower()
     # raw = raw.decode('utf-8').strip()
     # raw = remove_duplicate(raw)
     for e in REPLACE_WORDS:
@@ -62,9 +62,9 @@ for true_filename in file_list:
 
     words = list(gensim.utils.tokenize(raw, lowercase=True))
     words = [e for e in words if e.lower() not in STOP_WORDS_origin() and len(e) < 15 and not contain_digit(e)]
-    # from nltk.stem.wordnet import WordNetLemmatizer
-    # lmtzr = WordNetLemmatizer()
-    # words = [lmtzr.lemmatize(e) for e in words]
+    from nltk.stem.wordnet import WordNetLemmatizer
+    lmtzr = WordNetLemmatizer()
+    words = [lmtzr.lemmatize(e) for e in words]
     content = ' '.join(words)
 
     output_file_path = join(output_dir, true_filename)
